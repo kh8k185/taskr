@@ -25,17 +25,38 @@ export function useAuth() {
   }, [])
 
   async function loadProfile(userId) {
-    const { data } = await supabase
+    const { data: { user } } = await supabase.auth.getUser()
+
+    let { data } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single()
+
+    // Profile missing (e.g. created before email confirmation) — create it now
+    if (!data && user) {
+      const displayName = user.user_metadata?.display_name || user.email.split('@')[0]
+      const initial = displayName.charAt(0).toUpperCase()
+      const { data: inserted } = await supabase.from('profiles').insert({
+        id:             userId,
+        email:          user.email,
+        display_name:   displayName,
+        avatar_initial: initial,
+        is_admin:       false,
+      }).select().single()
+      data = inserted
+    }
+
     setProfile(data ?? null)
     setLoading(false)
   }
 
   async function signUp(email, password, displayName) {
-    const { data, error } = await supabase.auth.signUp({ email, password })
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { display_name: displayName?.trim() } },
+    })
     if (error) throw error
 
     if (data.user) {

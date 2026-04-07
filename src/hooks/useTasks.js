@@ -7,7 +7,7 @@ export function useTasks(userId) {
 
   // ── Fetch ──────────────────────────────────────────
   const fetchTasks = useCallback(async () => {
-    if (!userId) return
+    if (!userId) { setLoading(false); return }
     setLoading(true)
     const { data, error } = await supabase
       .from('tasks')
