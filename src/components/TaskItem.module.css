@@ -1,27 +1,83 @@
+/* ── Task Card ── */
 .task {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 16px;
   background: var(--surface);
   border: 1px solid var(--border);
+  border-left: 3px solid var(--border2);
   border-radius: var(--radius);
-  transition: opacity 0.2s, border-color 0.15s;
+  padding: 12px 14px;
+  transition: opacity 0.2s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  animation: scaleIn 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .task:hover {
-  border-color: #3e3e3e;
+  border-color: var(--border2);
+  box-shadow: var(--shadow);
 }
 
-.task.done {
+/* Priority left borders */
+.priority_high {
+  border-left-color: var(--high);
+}
+
+.priority_medium {
+  border-left-color: var(--medium);
+}
+
+.priority_low {
+  border-left-color: var(--low);
+}
+
+/* Done state */
+.taskDone {
   opacity: 0.45;
 }
 
-.check {
+/* Drag states */
+.dragging {
+  opacity: 0.4;
+  transform: scale(0.99);
+}
+
+.dragOver {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px var(--accent-dim), var(--shadow);
+}
+
+/* ── Main Row ── */
+.mainRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* ── Drag Handle ── */
+.dragHandle {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  cursor: grab;
+  padding-top: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.task:hover .dragHandle {
+  opacity: 1;
+}
+
+/* ── Checkbox ── */
+.checkbox {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  border: 1.5px solid var(--border2);
   background: transparent;
   cursor: pointer;
   flex-shrink: 0;
@@ -30,17 +86,20 @@
   align-items: center;
   justify-content: center;
   transition: all 0.15s;
+  color: #fff;
 }
 
-.check:hover {
+.checkbox:hover {
   border-color: var(--accent);
+  background: var(--accent-dim);
 }
 
-.check.checked {
+.checkboxDone {
   background: var(--accent);
   border-color: var(--accent);
 }
 
+/* ── Body ── */
 .body {
   flex: 1;
   min-width: 0;
@@ -49,78 +108,353 @@
 .text {
   display: block;
   font-size: 14px;
+  font-weight: 500;
   color: var(--text);
   margin-bottom: 6px;
   word-break: break-word;
   cursor: default;
+  line-height: 1.4;
+  user-select: none;
 }
 
-.done .text {
+.taskDone .text {
   text-decoration: line-through;
   color: var(--muted);
 }
 
 .editInput {
+  display: block;
   width: 100%;
   background: var(--surface2);
   border: 1px solid var(--accent);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   padding: 4px 8px;
   color: var(--text);
   font-size: 14px;
-  outline: none;
+  font-weight: 500;
   margin-bottom: 6px;
+  box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
+/* ── Meta ── */
 .meta {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: wrap;
 }
 
 .badge {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 100px;
   text-transform: capitalize;
+  letter-spacing: 0.02em;
 }
 
-.p_high   { background: #f8717118; color: var(--high); }
-.p_medium { background: #fbbf2418; color: var(--medium); }
-.p_low    { background: #34d39918; color: var(--low); }
-
-.cat {
-  background: var(--surface2);
-  color: var(--muted);
-}
-
-.due {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.overdue {
+.badge_high {
+  background: var(--high-dim);
   color: var(--high);
 }
 
-.del {
+.badge_medium {
+  background: var(--medium-dim);
+  color: var(--medium);
+}
+
+.badge_low {
+  background: var(--low-dim);
+  color: var(--low);
+}
+
+.badgeCat {
+  background: var(--surface3);
+  color: var(--text2);
+}
+
+.dueBadge {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text2);
+  background: var(--surface3);
+  padding: 2px 7px;
+  border-radius: 100px;
+}
+
+.dueToday {
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.dueOverdue {
+  color: var(--high);
+  background: var(--high-dim);
+}
+
+.subtaskCount {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text2);
+  background: var(--surface3);
+  padding: 2px 7px;
+  border-radius: 100px;
+}
+
+/* ── Action Buttons ── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.task:hover .actions {
+  opacity: 1;
+}
+
+.actionBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--muted);
-  cursor: pointer;
-  padding: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  transition: color 0.15s, background 0.15s;
-  flex-shrink: 0;
-  margin-top: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
-.del:hover {
+.actionBtn:hover {
+  background: var(--surface3);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.pinned {
+  color: var(--accent);
+}
+
+.pinned:hover {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.deleteBtn:hover {
   color: var(--high);
-  background: #f8717115;
+  background: var(--high-dim);
+  border-color: var(--high);
+}
+
+/* ── Expanded Section ── */
+.expanded {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeIn 0.2s ease;
+}
+
+.expandSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.expandLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Notes ── */
+.notes {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 60px;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+
+.notes:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+.notes::placeholder {
+  color: var(--muted);
+}
+
+/* ── Subtasks ── */
+.subtaskHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subtaskProgress {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.subtaskBar {
+  height: 3px;
+  background: var(--surface3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.subtaskBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.subtaskList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subtaskItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-xs);
+  transition: background 0.15s;
+}
+
+.subtaskItem:hover {
+  background: var(--surface2);
+}
+
+.subtaskItem:hover .subtaskDelete {
+  opacity: 1;
+}
+
+.subtaskCheck {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border2);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  color: #fff;
+}
+
+.subtaskCheck:hover {
+  border-color: var(--accent);
+}
+
+.subtaskChecked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.subtaskText {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.subtaskDone .subtaskText {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.subtaskDelete {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.subtaskDelete:hover {
+  background: var(--high-dim);
+  color: var(--high);
+  opacity: 1;
+}
+
+/* ── Add Subtask Form ── */
+.addSubtask {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.subtaskInput {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 5px 10px;
+  color: var(--text);
+  font-size: 12px;
+  transition: border-color 0.15s;
+}
+
+.subtaskInput:focus {
+  border-color: var(--accent);
+}
+
+.subtaskInput::placeholder {
+  color: var(--muted);
+}
+
+.subtaskAddBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-xs);
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.subtaskAddBtn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.subtaskAddBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

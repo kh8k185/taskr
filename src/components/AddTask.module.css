@@ -1,31 +1,36 @@
 .wrap {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card:focus-within,
+.cardOpen {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
 .mainRow {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 
 .input {
   flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  background: transparent;
+  border: none;
   color: var(--text);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.input:focus {
-  border-color: var(--accent);
+  font-size: 14px;
+  font-weight: 400;
+  padding: 0;
+  caret-color: var(--accent);
 }
 
 .input::placeholder {
@@ -33,25 +38,64 @@
 }
 
 .addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 14px;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 10px 20px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+  animation: scaleIn 0.15s ease;
+  flex-shrink: 0;
 }
 
 .addBtn:hover {
   background: var(--accent-hover);
 }
 
-.options {
-  background: var(--surface);
+.addBtn:active {
+  transform: scale(0.97);
+}
+
+.closeBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.closeBtn:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+
+/* ── Options Panel ── */
+.options {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeIn 0.15s ease;
+}
+
+.optRow {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -61,24 +105,31 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
-.label {
-  font-size: 12px;
-  color: var(--muted);
+.optLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   white-space: nowrap;
+  min-width: 48px;
 }
 
+/* ── Pills ── */
 .pills {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: wrap;
 }
 
 .pill {
   font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 20px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 100px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--muted);
@@ -87,30 +138,89 @@
   text-transform: capitalize;
 }
 
-.p_high.active  { background: #f8717120; color: var(--high); border-color: var(--high); }
-.p_medium.active { background: #fbbf2420; color: var(--medium); border-color: var(--medium); }
-.p_low.active  { background: #34d39920; color: var(--low); border-color: var(--low); }
-
-.cat:hover, .activeCat {
-  background: var(--surface2);
+.pill:hover {
   color: var(--text);
+  border-color: var(--border2);
+}
+
+/* Priority pills */
+.p_high { }
+.p_medium { }
+.p_low { }
+
+.p_high:hover,
+.p_high_active {
+  background: var(--high-dim);
+  color: var(--high);
+  border-color: var(--high);
+}
+
+.p_medium:hover,
+.p_medium_active {
+  background: var(--medium-dim);
+  color: var(--medium);
+  border-color: var(--medium);
+}
+
+.p_low:hover,
+.p_low_active {
+  background: var(--low-dim);
+  color: var(--low);
+  border-color: var(--low);
+}
+
+/* Category pills */
+.catPill:hover,
+.catActive {
+  background: var(--accent-dim);
+  color: var(--accent);
   border-color: var(--accent);
 }
 
-.activeCat {
-  color: var(--accent);
-}
-
+/* ── Date Input ── */
 .dateInput {
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   padding: 4px 10px;
   color: var(--text);
-  font-size: 13px;
-  outline: none;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.15s;
 }
 
 .dateInput:focus {
   border-color: var(--accent);
+}
+
+.dateInput::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+/* ── Notes ── */
+.notesGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notesInput {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+
+.notesInput:focus {
+  border-color: var(--accent);
+}
+
+.notesInput::placeholder {
+  color: var(--muted);
 }

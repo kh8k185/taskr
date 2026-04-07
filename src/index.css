@@ -1,35 +1,159 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg: #0f0f0f;
-  --surface: #1a1a1a;
-  --surface2: #242424;
-  --border: #2e2e2e;
-  --text: #f0f0f0;
-  --muted: #888;
+  --bg: #080808;
+  --surface: #111111;
+  --surface2: #1c1c1c;
+  --surface3: #242424;
+  --border: #252525;
+  --border2: #333333;
+  --text: #f2f2f2;
+  --text2: #a0a0a0;
+  --muted: #666;
   --accent: #7c6ef2;
   --accent-hover: #9184f5;
+  --accent-dim: rgba(124, 110, 242, 0.12);
   --high: #f87171;
   --medium: #fbbf24;
   --low: #34d399;
-  --radius: 12px;
-  --radius-sm: 8px;
+  --high-dim: rgba(248, 113, 113, 0.1);
+  --medium-dim: rgba(251, 191, 36, 0.1);
+  --low-dim: rgba(52, 211, 153, 0.1);
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-xs: 6px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] {
+  --bg: #f4f4f5;
+  --surface: #ffffff;
+  --surface2: #f0f0f1;
+  --surface3: #e8e8ea;
+  --border: #e2e2e5;
+  --border2: #d0d0d5;
+  --text: #111111;
+  --text2: #555;
+  --muted: #999;
+  --accent: #6c5ce7;
+  --accent-hover: #7d6ef0;
+  --accent-dim: rgba(108, 92, 231, 0.1);
+  --high: #dc2626;
+  --medium: #d97706;
+  --low: #059669;
+  --high-dim: rgba(220, 38, 38, 0.1);
+  --medium-dim: rgba(217, 119, 6, 0.1);
+  --low-dim: rgba(5, 150, 105, 0.1);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    max-height: 600px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  min-height: 100%;
   font-size: 15px;
   line-height: 1.6;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-input, select, textarea, button {
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+input,
+textarea,
+select {
   font-family: inherit;
   font-size: inherit;
+  outline: none;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+textarea {
+  resize: vertical;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
