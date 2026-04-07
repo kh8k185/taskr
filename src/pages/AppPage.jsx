@@ -114,6 +114,16 @@ export default function AppPage({ profile }) {
   }
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const firstName = profile?.display_name?.split(' ')[0] || 'there'
+
+  const motivMsg =
+    stats.total === 0       ? 'Add your first task to get started.'
+    : stats.pct === 100     ? '🎉 All done — you crushed it!'
+    : stats.pct >= 75       ? `Almost there — ${stats.remaining} left!`
+    : stats.overdue > 0     ? `${stats.overdue} task${stats.overdue > 1 ? 's' : ''} overdue.`
+    : `${stats.remaining} task${stats.remaining !== 1 ? 's' : ''} remaining.`
 
   return (
     <div className={styles.page}>
@@ -121,8 +131,8 @@ export default function AppPage({ profile }) {
       {/* Page header */}
       <div className={styles.pageHeader}>
         <div>
-          <h2 className={styles.pageTitle}>My Tasks</h2>
-          <p className={styles.pageDate}>{today}</p>
+          <h2 className={styles.pageTitle}>{greeting}, {firstName}.</h2>
+          <p className={styles.pageDate}>{today} &nbsp;·&nbsp; {motivMsg}</p>
         </div>
       </div>
 

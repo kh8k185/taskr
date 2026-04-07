@@ -1,12 +1,13 @@
 import { CheckSquare, LayoutDashboard, Shield, LogOut, Zap } from 'lucide-react'
+import AvatarUpload from './AvatarUpload'
 import styles from './Sidebar.module.css'
 
 const NAV = [
-  { id: 'tasks',  label: 'Tasks',     icon: CheckSquare },
-  { id: 'stats',  label: 'Overview',  icon: LayoutDashboard },
+  { id: 'tasks',  label: 'Tasks',    icon: CheckSquare },
+  { id: 'stats',  label: 'Overview', icon: LayoutDashboard },
 ]
 
-export default function Sidebar({ profile, page, onNav, onSignOut }) {
+export default function Sidebar({ profile, page, onNav, onSignOut, onAvatarUpload }) {
   const isAdmin = profile?.is_admin
 
   return (
@@ -25,36 +26,38 @@ export default function Sidebar({ profile, page, onNav, onSignOut }) {
             className={`${styles.navItem} ${page === id ? styles.active : ''}`}
             onClick={() => onNav(id)}
           >
-            <Icon size={16} />
+            <Icon size={15} />
             <span>{label}</span>
             {page === id && <div className={styles.activePip} />}
           </button>
         ))}
 
         {isAdmin && (
-          <button
-            className={`${styles.navItem} ${styles.adminItem} ${page === 'admin' ? styles.active : ''}`}
-            onClick={() => onNav('admin')}
-          >
-            <Shield size={16} />
-            <span>Admin</span>
-            {page === 'admin' && <div className={styles.activePip} />}
-          </button>
+          <>
+            <div className={styles.navDivider} />
+            <button
+              className={`${styles.navItem} ${styles.adminItem} ${page === 'admin' ? styles.active : ''}`}
+              onClick={() => onNav('admin')}
+            >
+              <Shield size={15} />
+              <span>Admin</span>
+              {page === 'admin' && <div className={styles.activePip} />}
+            </button>
+          </>
         )}
       </nav>
 
-      {/* Spacer */}
       <div className={styles.spacer} />
 
       {/* User */}
       <div className={styles.user}>
-        <div className={styles.avatar}>{profile?.avatar_initial || '?'}</div>
+        <AvatarUpload profile={profile} onUpload={onAvatarUpload} size="sm" />
         <div className={styles.userInfo}>
           <span className={styles.userName}>{profile?.display_name || 'User'}</span>
           <span className={styles.userEmail}>{profile?.email || ''}</span>
         </div>
         <button className={styles.signOut} onClick={onSignOut} title="Sign out">
-          <LogOut size={15} />
+          <LogOut size={14} />
         </button>
       </div>
     </aside>

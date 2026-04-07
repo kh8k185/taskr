@@ -7,7 +7,7 @@ import Sidebar from './components/Sidebar'
 import styles from './App.module.css'
 
 export default function App() {
-  const { user, profile, loading, signIn, signUp, signOut } = useAuth()
+  const { user, profile, loading, signIn, signUp, signOut, uploadAvatar } = useAuth()
   const [page, setPage] = useState('tasks')
 
   // ── Loading splash ─────────────────────────────────
@@ -33,6 +33,7 @@ export default function App() {
         page={page}
         onNav={setPage}
         onSignOut={signOut}
+        onAvatarUpload={uploadAvatar}
       />
       <main className={styles.main}>
         {page === 'tasks'  && <AppPage   profile={profile} />}

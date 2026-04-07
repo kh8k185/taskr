@@ -5,23 +5,42 @@
   border-left: 3px solid var(--border2);
   border-radius: var(--radius);
   padding: 12px 14px;
-  transition: opacity 0.2s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  transition: opacity 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s, background 0.15s;
   animation: scaleIn 0.2s ease;
   position: relative;
+  overflow: hidden;
+}
+
+/* Subtle shine on hover */
+.task::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
 }
 
 .task:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 0 1px var(--border2);
   border-color: var(--border2);
-  box-shadow: var(--shadow-sm), 0 0 0 1px var(--border);
 }
 
-/* Priority left borders */
+.task:hover::before { opacity: 1; }
+
+/* Priority left borders + glow */
 .priority_high   { border-left-color: var(--high); }
 .priority_medium { border-left-color: var(--medium); }
 .priority_low    { border-left-color: var(--low); }
 
+.priority_high:hover   { box-shadow: 0 4px 16px rgba(0,0,0,0.25), -2px 0 12px rgba(248,113,113,0.15); }
+.priority_medium:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.25), -2px 0 12px rgba(251,191,36,0.12); }
+
 /* Done state */
-.taskDone { opacity: 0.4; }
+.taskDone { opacity: 0.38; }
+.taskDone:hover { opacity: 0.55; transform: none; box-shadow: none; }
 
 /* Drag states */
 .dragging  { opacity: 0.35; transform: scale(0.99); }
@@ -65,19 +84,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s;
+  transition: all 0.15s cubic-bezier(0.4,0,0.2,1);
   color: #fff;
+  position: relative;
 }
 
 .checkbox:hover {
   border-color: var(--accent);
   background: var(--accent-dim);
+  transform: scale(1.1);
 }
+
+.checkbox:active { transform: scale(0.92); }
 
 .checkboxDone {
   background: var(--accent);
   border-color: var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow);
+  box-shadow: 0 0 10px var(--accent-glow);
+  animation: checkPop 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes checkPop {
+  0%   { transform: scale(0.7); }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
 }
 
 /* ── Body ── */
@@ -321,7 +351,8 @@
 
 .subtaskDelete:hover { color: var(--high); }
 
-.addSubtaskRow {
+.addSubtaskRow,
+.addSubtask {
   display: flex;
   gap: 6px;
 }

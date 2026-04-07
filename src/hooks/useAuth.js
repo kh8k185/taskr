@@ -7,14 +7,12 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) loadProfile(session.user.id)
       else setLoading(false)
     })
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) loadProfile(session.user.id)
@@ -25,7 +23,7 @@ export function useAuth() {
   }, [])
 
   async function loadProfile(userId) {
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user: authUser } } = await supabase.auth.getUser()
 
     let { data } = await supabase
       .from('profiles')
@@ -33,18 +31,28 @@ export function useAuth() {
       .eq('id', userId)
       .single()
 
-    // Profile missing (e.g. created before email confirmation) — create it now
-    if (!data && user) {
-      const displayName = user.user_metadata?.display_name || user.email.split('@')[0]
+    // Auto-create profile if missing
+    if (!data && authUser) {
+      const displayName = authUser.user_metadata?.display_name || authUser.email.split('@')[0]
       const initial = displayName.charAt(0).toUpperCase()
       const { data: inserted } = await supabase.from('profiles').insert({
         id:             userId,
-        email:          user.email,
+        email:          authUser.email,
         display_name:   displayName,
         avatar_initial: initial,
         is_admin:       false,
+        banned:         false,
       }).select().single()
       data = inserted
+    }
+
+    // Sign out banned users
+    if (data?.banned) {
+      await supabase.auth.signOut()
+      setUser(null)
+      setProfile(null)
+      setLoading(false)
+      return
     }
 
     setProfile(data ?? null)
@@ -61,14 +69,14 @@ export function useAuth() {
 
     if (data.user) {
       const initial = displayName?.trim().charAt(0).toUpperCase() || email.charAt(0).toUpperCase()
-      const { error: profileError } = await supabase.from('profiles').insert({
+      await supabase.from('profiles').insert({
         id:             data.user.id,
         email:          email.toLowerCase(),
         display_name:   displayName?.trim() || email.split('@')[0],
         avatar_initial: initial,
         is_admin:       false,
+        banned:         false,
       })
-      if (profileError) console.warn('Profile insert error:', profileError)
     }
     return data
   }
@@ -83,5 +91,36 @@ export function useAuth() {
     await supabase.auth.signOut()
   }
 
-  return { user, profile, loading, signUp, signIn, signOut }
+  async function updateProfile(changes) {
+    if (!user) return
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(changes)
+      .eq('id', user.id)
+      .select()
+      .single()
+    if (!error && data) setProfile(data)
+    return { data, error }
+  }
+
+  async function uploadAvatar(file) {
+    if (!user) return
+    const ext  = file.name.split('.').pop()
+    const path = `${user.id}/avatar.${ext}`
+
+    const { error: upErr } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true })
+
+    if (upErr) throw upErr
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(path)
+
+    await updateProfile({ avatar_url: publicUrl + '?t=' + Date.now() })
+    return publicUrl
+  }
+
+  return { user, profile, loading, signUp, signIn, signOut, updateProfile, uploadAvatar }
 }

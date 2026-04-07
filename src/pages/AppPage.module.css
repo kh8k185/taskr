@@ -49,6 +49,19 @@
   gap: 0;
   box-shadow: var(--shadow-sm);
   animation: slideUp 0.3s ease 0.05s both;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient glow behind the strip */
+.statsStrip::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 120px; height: 100%;
+  background: radial-gradient(ellipse at right center, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0.4;
 }
 
 .statBlock {
@@ -75,7 +88,10 @@
   color: var(--text);
   line-height: 1;
   font-family: 'JetBrains Mono', monospace;
+  transition: color 0.2s;
 }
+
+.statBlock:hover .statNum { color: var(--accent2); }
 
 .greenNum { color: var(--low); }
 .redNum   { color: var(--high); }
@@ -245,6 +261,7 @@
   border-color: var(--border2);
   color: var(--text);
   background: var(--surface2);
+  transform: translateY(-1px);
 }
 
 .filterActive {
